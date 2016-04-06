@@ -8,50 +8,38 @@
 #include "stm32f4xx_hal.h"
 #include "fatfs.h"
 #include "BlinkLed.h"
+#include "uart.h"
 
 using namespace std;
 
 SD_HandleTypeDef hsd;
 HAL_SD_CardInfoTypedef SDCardInfo;
-UART_HandleTypeDef huart3;
 
 static void MX_GPIO_Init(void);
 static void MX_SDIO_SD_Init(void);
-static void MX_USART3_UART_Init(void);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
-void send_string(string s){
-	const uint8_t* transmitBuffer;
-	transmitBuffer = reinterpret_cast<const uint8_t*>(s.data());
-	HAL_UART_Transmit(&huart3, (uint8_t*) transmitBuffer, s.length(), 1000);
-}
+
 
 int main(int argc, char* argv[]){
-	//BlinkLed led1(1, 1, false);
-	//led1.powerUp();
-	//led1.turnOn();
 	MX_GPIO_Init();
 	MX_SDIO_SD_Init();
 	MX_FATFS_Init();
-	MX_USART3_UART_Init();
 
+	Uart uart = Uart();
+
+
+/*
 	FIL fil;
 	char line[82];
 	FRESULT fr;
 	FATFS FatFs;
 
-	fr = f_mount(&FatFs, SD_Path, 1);
-	if ( fr == FR_NO_FILESYSTEM ){
-		send_string("NO FileSystem. Format card to FATFS\r\n");
-		return 1;
-	}else if( fr != FR_OK ){
-		send_string("Disk mount error\r\n");
-		return 1;
-	}
+
 
 	fr = f_open(&fil, "settings.txt", FA_READ);
 	if ( fr == FR_OK ) {
@@ -79,9 +67,11 @@ int main(int argc, char* argv[]){
     if( testBytes == sizeof testBuffer ){
     	send_string("Data write ok.\r\n");
     }
-
+*/
   while (1)
     {
+	  uart.send_string("hello");
+	  HAL_Delay(1000);
        // Add your code here.
     }
 }
@@ -107,24 +97,9 @@ void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+
 
 }
-
-/* USART1 init function */
-void MX_USART3_UART_Init(void)
-{
-	huart3.Instance = USART3;
-	huart3.Init.BaudRate = 115200;
-	huart3.Init.WordLength = UART_WORDLENGTH_8B;
-	huart3.Init.StopBits = UART_STOPBITS_1;
-	huart3.Init.Parity = UART_PARITY_NONE;
-  	huart3.Init.Mode = UART_MODE_TX_RX;
-  	huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  	huart3.Init.OverSampling = UART_OVERSAMPLING_16;
-  	HAL_UART_Init(&huart3);
-}
-
 
 
 #ifdef USE_FULL_ASSERT

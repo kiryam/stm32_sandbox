@@ -25,7 +25,7 @@ void SDCard::init() {
 
 	MX_FATFS_Init();
 
-	info("SD card united\r\n");
+	info("SD card united");
 }
 
 FRESULT SDCard::mount() {
@@ -33,14 +33,14 @@ FRESULT SDCard::mount() {
 
 	fr = f_mount(&FatFs, SD_Path, 1);
 	if ( fr == FR_NO_FILESYSTEM ){
-		error("NO FileSystem. Format card to FATFS\r\n");
+		error("NO FileSystem. Format card to FATFS");
 		return fr;
 	}else if( fr != FR_OK ){
-		error("Disk mount error\r\n");
+		error("Disk mount error");
 		return fr;
 	}
 
-	info("SD card mounted\r\n");
+	info("SD card mounted");
 	return fr;
 }
 
@@ -56,18 +56,40 @@ std::string SDCard::get_file_cont(const char* filename){
 			result.append(line);
 	}else{
 		char msg[50] = {};
-		sprintf(msg, "File %s not found.\r\n", filename);
+		sprintf(msg, "File %s not found.", filename);
 		error(msg);
 		return "";
 	}
 
+	f_close(&fil);
 	return result;
+}
+
+int SDCard::write_str_to_file(const char* filename, std::string s){
+	FIL fil;
+	FRESULT fr;
+	UINT testBytes=0;
+
+	fr = f_open(&fil, filename, FA_WRITE | FA_CREATE_ALWAYS);
+	if ( fr != FR_OK) {
+		error("Failed to open out.txt for writing");
+	    return 0;
+	}
+
+	fr = f_write(&fil, s.c_str(), s.length(), &testBytes);
+	f_close(&fil);
+
+	if( testBytes == s.length() ){
+		info("Data write ok.");
+	}
+	return testBytes;
 }
 
 void SDCard::info(const char* info_str) {
 	std::ostringstream stringStream;
 	stringStream << "[INFO] ";
 	stringStream << info_str;
+	stringStream << "\r\n";
 	std::string copyOfStr = stringStream.str();
 	this->uart->send_string(copyOfStr);
 }
@@ -76,6 +98,7 @@ void SDCard::error(const char* error_str) {
 	std::ostringstream stringStream;
 	stringStream << "[ERROR] ";
 	stringStream << error_str;
+	stringStream << "\r\n";
 	std::string copyOfStr = stringStream.str();
 	this->uart->send_string(copyOfStr);
 }

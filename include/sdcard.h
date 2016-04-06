@@ -20,6 +20,7 @@ public:
 	SDCard(Uart *uart);
 	FRESULT mount();
 	std::string get_file_cont(const char* filename);
+	int write_str_to_file(const char* filename, std::string);
 
 private:
 	Uart* uart;

@@ -3,7 +3,6 @@
 #include "uart.h"
 #include "sdcard.h"
 #include "stm32f4xx_hal.h"
-#include "fatfs.h"
 
 using namespace std;
 

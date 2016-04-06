@@ -1,14 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
-#include <string.h>
-
-#include "diag/Trace.h"
-#include "stm32f407xx.h"
+#include "uart.h"
 #include "stm32f4xx_hal.h"
 #include "fatfs.h"
-#include "BlinkLed.h"
-#include "uart.h"
+
 
 using namespace std;
 

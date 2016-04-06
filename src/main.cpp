@@ -1,17 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "uart.h"
+#include "sdcard.h"
 #include "stm32f4xx_hal.h"
 #include "fatfs.h"
 
-
 using namespace std;
-
-SD_HandleTypeDef hsd;
-HAL_SD_CardInfoTypedef SDCardInfo;
-
-static void MX_GPIO_Init(void);
-static void MX_SDIO_SD_Init(void);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -20,19 +14,18 @@ static void MX_SDIO_SD_Init(void);
 
 
 int main(int argc, char* argv[]){
-	MX_GPIO_Init();
-	MX_SDIO_SD_Init();
-	MX_FATFS_Init();
-
 	Uart uart = Uart();
+	SDCard sdcard = SDCard(&uart);
+	sdcard.mount();
+
+	std::string settings_cont = sdcard.get_file_cont("settings.txt");
+	uart.send_string(settings_cont);
+
 
 /*
 	FIL fil;
 	char line[82];
 	FRESULT fr;
-	FATFS FatFs;
-
-
 
 	fr = f_open(&fil, "settings.txt", FA_READ);
 	if ( fr == FR_OK ) {
@@ -63,36 +56,13 @@ int main(int argc, char* argv[]){
 */
   while (1)
     {
-	  uart.send_string("hello");
+	  //uart.send_string("hello");
 	  HAL_Delay(1000);
        // Add your code here.
     }
 }
 
 
-/* SDIO init function */
-void MX_SDIO_SD_Init(void)
-{
-  hsd.Instance = SDIO;
-  hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
-  hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
-  hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
-  hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
-  hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
-  hsd.Init.ClockDiv = 0;
-}
-
-/** Pinout Configuration
-*/
-void MX_GPIO_Init(void)
-{
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-
-
-}
 
 
 #ifdef USE_FULL_ASSERT

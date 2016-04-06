@@ -19,14 +19,12 @@ static void MX_SDIO_SD_Init(void);
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
 
-
 int main(int argc, char* argv[]){
 	MX_GPIO_Init();
 	MX_SDIO_SD_Init();
 	MX_FATFS_Init();
 
 	Uart uart = Uart();
-
 
 /*
 	FIL fil;

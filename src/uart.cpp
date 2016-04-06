@@ -7,6 +7,7 @@
 
 #include "uart.h"
 
+UART_HandleTypeDef huart3;
 
 Uart::Uart() {
 	init();

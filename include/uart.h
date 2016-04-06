@@ -12,8 +12,6 @@
 #include <string>
 
 class Uart {
-	UART_HandleTypeDef huart3;
-
 public:
 	Uart();
 	void send_string(std::string s);

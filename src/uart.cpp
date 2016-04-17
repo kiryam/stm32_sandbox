@@ -16,7 +16,7 @@ Uart::Uart() {
 void Uart::send_string(std::string s) {
 	const uint8_t* transmitBuffer;
 	transmitBuffer = reinterpret_cast<const uint8_t*>(s.data());
-	HAL_UART_Transmit(&huart3, (uint8_t*) transmitBuffer, s.length(), 1000);
+	HAL_UART_Transmit(&huart3, (uint8_t*) transmitBuffer, s.length(), 5000);
 }
 
 void Uart::init() {

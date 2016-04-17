@@ -1,0 +1,608 @@
+//**************************************************************************************************
+// Filename							MT_WH1602.c
+// Platform     				STM32F10x/STM32F4xx
+// Author								Aveal (http://microtechnics.ru/)
+// Current version  		1.0.0   
+// Date         				07.03.2013
+//**************************************************************************************************
+
+
+//**************************************************************************************************
+// Includes
+//**************************************************************************************************
+
+#include "MT_WH1602.h"
+#include "stm32f4xx_hal.h"
+
+
+//**************************************************************************************************
+// Declarations and definitions
+//**************************************************************************************************
+
+// GPIO initialization struct
+GPIO_InitTypeDef MT_WH1602_GPIOcfg;
+
+
+
+//**************************************************************************************************
+// Global functions
+//**************************************************************************************************
+
+
+/*
+//**************************************************************************************************
+// Function      MT_WH1602_Init()
+// Description   GPIO initalization for WH1602 module
+// Parameters    None
+// RetVal	       None
+//**************************************************************************************************
+void MT_WH1602_Init()
+{
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	__HAL_RCC_GPIOC_CLK_ENABLE();
+	
+	// Initialize all pins connected to the WH1602 module
+	GPIO_InitTypeDef GPIO_InitStruct_RS;
+	GPIO_InitStruct_RS.Pin = MT_WH1602_RS_PIN;
+	GPIO_InitStruct_RS.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct_RS.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(MT_WH1602_RS_PORT, &GPIO_InitStruct_RS);
+
+	GPIO_InitTypeDef GPIO_InitStruct_RW;
+	GPIO_InitStruct_RW.Pin = MT_WH1602_RW_PIN;
+	GPIO_InitStruct_RW.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct_RW.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(MT_WH1602_RW_PORT, &GPIO_InitStruct_RW);
+
+	GPIO_InitTypeDef GPIO_InitStruct_E;
+	GPIO_InitStruct_E.Pin = MT_WH1602_E_PIN;
+	GPIO_InitStruct_E.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct_E.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(MT_WH1602_E_PORT, &GPIO_InitStruct_E);
+
+	GPIO_InitTypeDef GPIO_InitStruct_DB7;
+	GPIO_InitStruct_DB7.Pin = MT_WH1602_DB7_PIN;
+	GPIO_InitStruct_DB7.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct_DB7.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(MT_WH1602_DB7_PORT, &GPIO_InitStruct_DB7);
+
+	GPIO_InitTypeDef GPIO_InitStruct_DB6;
+	GPIO_InitStruct_DB6.Pin = MT_WH1602_DB6_PIN;
+	GPIO_InitStruct_DB6.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct_DB6.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(MT_WH1602_DB6_PORT, &GPIO_InitStruct_DB6);
+
+	GPIO_InitTypeDef GPIO_InitStruct_DB5;
+	GPIO_InitStruct_DB5.Pin = MT_WH1602_DB5_PIN;
+	GPIO_InitStruct_DB5.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct_DB5.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(MT_WH1602_DB5_PORT, &GPIO_InitStruct_DB5);
+
+	GPIO_InitTypeDef GPIO_InitStruct_DB4;
+	GPIO_InitStruct_DB4.Pin = MT_WH1602_DB4_PIN;
+	GPIO_InitStruct_DB4.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct_DB4.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(MT_WH1602_DB4_PORT, &GPIO_InitStruct_DB4);
+
+} // End of MT_WH1602_Init()
+*/
+/*
+
+void MT_WH1602_Delay(uint32_t us)
+{
+  volatile uint32_t i;
+  i = (HAL_RCC_GetSysClockFreq()/MT_WH1602_DELAY_uS)*us;
+
+  for (; i != 0; i--);
+} // End of function MT_WH1602_Delay()
+*/
+
+
+//**************************************************************************************************
+// Function      MT_WH1602_DataReadWrite()
+// Description   Strob impulse for data read/write
+// Parameters    None
+// RetVal	     	 None
+//**************************************************************************************************
+/*
+void MT_WH1602_DataReadWrite()
+{
+	HAL_GPIO_WritePin(MT_WH1602_E_PORT, MT_WH1602_E_PIN, GPIO_PIN_SET);
+    MT_WH1602_Delay(MT_WH1602_DATA_RW_DELAY);
+    HAL_GPIO_WritePin(MT_WH1602_E_PORT, MT_WH1602_E_PIN, GPIO_PIN_RESET);
+} // End of function MT_WH1602_DataReadWrite()
+*/
+
+/*
+void MT_WH1602_ResetPins(){
+	HAL_GPIO_WritePin(MT_WH1602_RS_PORT,MT_WH1602_RS_PIN,GPIO_PIN_RESET);
+	//HAL_GPIO_WritePin(MT_WH1602_RW_PORT,MT_WH1602_RW_PIN,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MT_WH1602_DB7_PORT,MT_WH1602_DB7_PIN,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_RESET);
+}
+*/
+
+
+//**************************************************************************************************
+// Function      MT_WH1602_ClearDisplay()
+// Description   This function clears the display
+// Parameters    None
+// RetVal	       None
+//**************************************************************************************************
+/*
+void MT_WH1602_ClearDisplay()
+{
+	MT_WH1602_ResetPins();
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_SET);
+	
+	MT_WH1602_DataReadWrite();
+	//MT_WH1602_Delay(200000);
+	HAL_Delay(100);
+} // End of function MT_WH1602_ClearDisplay()
+*/
+
+
+//**************************************************************************************************
+// Function      MT_WH1602_ReturnHome()
+// Description   Cursor return home instruction
+// Parameters    None
+// RetVal	       None
+//**************************************************************************************************
+
+/*
+void MT_WH1602_ReturnHome()
+{
+	MT_WH1602_ResetPins();
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+	HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_SET);
+	MT_WH1602_DataReadWrite();
+	HAL_Delay(100);
+} // End of function MT_WH1602_ReturnHome()
+*/
+
+
+
+//**************************************************************************************************
+// Function      MT_WH1602_DisplayOnOff()
+// Description   Controls display/cursor/blink ON/OFF
+// Parameters    Dbit - display ON/OFF control bit
+//							 Cbit - cursor ON/OFF control bit
+//							 Bbit - cursor blink ON/OFF control bit
+// RetVal	       None
+//**************************************************************************************************
+/*
+void MT_WH1602_DisplayOnOff(uint8_t Dbit, uint8_t Cbit, uint8_t Bbit)
+{
+	MT_WH1602_ResetPins();
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_DB7_PORT,MT_WH1602_DB7_PIN,GPIO_PIN_SET);
+
+	if (Dbit == 1) {
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_RESET);
+	}
+
+	if (Cbit == 1) {
+		HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_RESET);
+	}
+
+	if (Bbit == 1) {
+		HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_RESET);
+	}
+
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+} // End of function MT_WH1602_DisplayOnOff()
+*/
+
+
+//**************************************************************************************************
+// Function      MT_WH1602_CursorOrDisplayShift()
+// Description   Cursor return home instruction
+// Parameters    SCbit 
+//    					 RLbit 
+//							 ----------------------------------------------------------------------------------
+//							 SCbit | RLbit | Description 																										
+//							 Low	 | Low   | Shift cursor to the left																							
+//							 Low	 | High  | Shift cursor to the right
+//							 High	 | Low   | Shift display to the left. Cursor follows the display shift		
+//							 High	 | High  | Shift display to the right. Cursor follows the display shift	
+//							 ----------------------------------------------------------------------------------			
+// RetVal	       None
+//**************************************************************************************************
+/*
+void MT_WH1602_CursorOrDisplayShift(uint8_t SCbit, uint8_t RLbit)
+{
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_SET);
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+
+	MT_WH1602_ResetPins();
+	if (SCbit == 1) {
+		HAL_GPIO_WritePin(MT_WH1602_DB7_PORT,MT_WH1602_DB7_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB7_PORT,MT_WH1602_DB7_PIN,GPIO_PIN_RESET);
+	}
+	
+	if (RLbit == 1) {
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_RESET);
+	}
+	
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+} // End of function MT_WH1602_CursorOrDisplayShift()
+*/
+
+
+//**************************************************************************************************
+// Function      MT_WH1602_FunctionSet()
+// Description   Sets interface data length and controls display line number and font type
+// Parameters           DLbit - interface data length control bit
+//    					 Nbit  - display line number control bit
+//         			     Fbit  - display font type control bit
+//							 ----------------------------------------------------------------------------------
+//							 SCbit | RLbit | Display Lines | Font | Duty factor 																								
+//							 Low	 | Low   |		   1			 | 5x8	|			 1/8																
+//							 Low	 | High  |		   1			 | 5x11 |			 1/11
+//							 High	 | Low   |		   2			 | 5x8  |      1/16
+//							 ----------------------------------------------------------------------------------			
+// RetVal	       None
+//**************************************************************************************************
+/*
+void MT_WH1602_FirstStage(){
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_SET);
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_SET);
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_SET);
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+}
+*/
+
+/*
+void MT_WH1602_Set4BitMode(){
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_SET);
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+}
+*/
+
+/*
+void MT_WH1602_FunctionSet(uint8_t Nbit, uint8_t Fbit)
+{
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_SET);
+	MT_WH1602_DataReadWrite();
+
+	MT_WH1602_Delay(1000);
+	MT_WH1602_ResetPins();
+	if (Nbit == 1) {
+		HAL_GPIO_WritePin(MT_WH1602_DB7_PORT,MT_WH1602_DB7_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB7_PORT,MT_WH1602_DB7_PIN,GPIO_PIN_RESET);
+	}
+	
+	if (Fbit == 1) {
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_RESET);
+	}
+
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+} // End of function MT_WH1602_FunctionSet()
+*/
+/*
+void MT_WH1602_EntryMode(uint8_t Ibit, uint8_t Sbit)
+{
+	MT_WH1602_ResetPins();
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_SET);
+
+	if (Ibit == 1){
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_SET);
+	}else{
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_RESET);
+	}
+
+	if (Sbit == 1){
+		HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_SET);
+	}else{
+		HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_RESET);
+	}
+
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+}
+*/
+//**************************************************************************************************
+// Function      MT_WH1602_SetCGRAMAddress()
+// Description   Sets CGRAM address to AC
+// Parameters    address - CGRAM address
+// RetVal	       None
+//**************************************************************************************************
+/*
+void MT_WH1602_SetCGRAMAddress(uint8_t address)
+{
+	GPIO_ResetBits(MT_WH1602_RS_PORT, MT_WH1602_RS_PIN);
+	GPIO_ResetBits(MT_WH1602_RW_PORT, MT_WH1602_RW_PIN);
+	GPIO_ResetBits(MT_WH1602_DB7_PORT, MT_WH1602_DB7_PIN);
+	GPIO_SetBits(MT_WH1602_DB6_PORT, MT_WH1602_DB6_PIN);
+	
+	if (address & BIT_5_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB5_PORT, MT_WH1602_DB5_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB5_PORT, MT_WH1602_DB5_PIN);
+	}
+	
+	if (address & BIT_4_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB4_PORT, MT_WH1602_DB4_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB4_PORT, MT_WH1602_DB4_PIN);
+	}
+	
+	if (address & BIT_3_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB3_PORT, MT_WH1602_DB3_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB3_PORT, MT_WH1602_DB3_PIN);
+	}
+	
+	if (address & BIT_2_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB2_PORT, MT_WH1602_DB2_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB2_PORT, MT_WH1602_DB2_PIN);
+	}
+	
+	if (address & BIT_1_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB1_PORT, MT_WH1602_DB1_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB1_PORT, MT_WH1602_DB1_PIN);
+	}
+	
+	if (address & BIT_0_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB0_PORT, MT_WH1602_DB0_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB0_PORT, MT_WH1602_DB0_PIN);
+	}
+	
+	MT_WH1602_DataReadWrite();
+} // End of function MT_WH1602_SetCGRAMAddress()
+*/
+
+
+//**************************************************************************************************
+// Function      MT_WH1602_SetDDRAMAddress()
+// Description   Sets CGRAM address to AC
+// Parameters    address - DDRAM address
+// RetVal	       None
+//**************************************************************************************************
+/*
+void MT_WH1602_SetDDRAMAddress(uint8_t address)
+{
+	GPIO_ResetBits(MT_WH1602_RS_PORT, MT_WH1602_RS_PIN);
+	GPIO_ResetBits(MT_WH1602_RW_PORT, MT_WH1602_RW_PIN);
+	GPIO_SetBits(MT_WH1602_DB7_PORT, MT_WH1602_DB7_PIN);
+	
+	if (address & BIT_6_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB6_PORT, MT_WH1602_DB6_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB6_PORT, MT_WH1602_DB6_PIN);
+	}
+	
+	if (address & BIT_5_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB5_PORT, MT_WH1602_DB5_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB5_PORT, MT_WH1602_DB5_PIN);
+	}
+	
+	if (address & BIT_4_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB4_PORT, MT_WH1602_DB4_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB4_PORT, MT_WH1602_DB4_PIN);
+	}
+	
+	if (address & BIT_3_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB3_PORT, MT_WH1602_DB3_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB3_PORT, MT_WH1602_DB3_PIN);
+	}
+	
+	if (address & BIT_2_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB2_PORT, MT_WH1602_DB2_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB2_PORT, MT_WH1602_DB2_PIN);
+	}
+	
+	if (address & BIT_1_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB1_PORT, MT_WH1602_DB1_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB1_PORT, MT_WH1602_DB1_PIN);
+	}
+	
+	if (address & BIT_0_MASK)
+	{
+		GPIO_SetBits(MT_WH1602_DB0_PORT, MT_WH1602_DB0_PIN);
+	}
+	else
+	{
+		GPIO_ResetBits(MT_WH1602_DB0_PORT, MT_WH1602_DB0_PIN);
+	}
+	
+	MT_WH1602_DataReadWrite();
+} // End of function MT_WH1602_SetDDRAMAddress()
+*/
+
+
+//**************************************************************************************************
+// Function      MT_WH1602_ReadBusy()
+// Description   Read busy flag and address
+// Parameters    None
+// RetVal	       busyFlag - busy flag current value
+//**************************************************************************************************
+/*
+uint8_t MT_WH1602_ReadBusy()
+{
+	uint8_t busyFlag;
+	HAL_GPIO_WritePin(MT_WH1602_RS_PORT,MT_WH1602_RS_PIN,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MT_WH1602_RW_PORT,MT_WH1602_RW_PIN,GPIO_PIN_SET);
+  
+	// DB7 pin is input
+	GPIO_StructInit(&MT_WH1602_GPIOcfg);
+	MT_WH1602_GPIOcfg.Pin = MT_WH1602_DB7_PIN;
+	MT_WH1602_GPIOcfg.Mode = GPIO_MODE_INPUT;
+	HAL_GPIO_Init(MT_WH1602_DB7_PORT, &MT_WH1602_GPIOcfg);
+	
+	HAL_GPIO_WritePin(MT_WH1602_E_PORT,MT_WH1602_E_PIN,GPIO_PIN_SET);
+	MT_WH1602_Delay(MT_WH1602_DATA_RW_DELAY);
+	busyFlag = HAL_GPIO_ReadPin(MT_WH1602_DB7_PORT, MT_WH1602_DB7_PIN);
+
+	HAL_GPIO_WritePin(MT_WH1602_E_PORT,MT_WH1602_E_PIN,GPIO_PIN_RESET);
+	
+	// DB7 pin is output
+	GPIO_StructInit(&MT_WH1602_GPIOcfg);
+	MT_WH1602_GPIOcfg.Pin = MT_WH1602_DB7_PIN;
+	MT_WH1602_GPIOcfg.Mode = GPIO_MODE_OUTPUT_PP;
+	HAL_GPIO_Init(MT_WH1602_DB7_PORT, &MT_WH1602_GPIOcfg);
+	
+	return busyFlag;
+} // End of function MT_WH1602_ReadBusy()
+*/
+
+
+//**************************************************************************************************
+// Function      MT_WH1602_WriteData()
+// Description   Write data to CGRAM or DDRAM
+// Parameters    data - 8-bit data byte
+// RetVal	       None
+//**************************************************************************************************
+
+/*
+void MT_WH1602_WriteData(uint8_t data)
+{	
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_RS_PORT,MT_WH1602_RS_PIN,GPIO_PIN_SET);
+
+	if (data & BIT_7_MASK) {
+		HAL_GPIO_WritePin(MT_WH1602_DB7_PORT,MT_WH1602_DB7_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB7_PORT,MT_WH1602_DB7_PIN,GPIO_PIN_RESET);
+	}
+  		
+	if (data & BIT_6_MASK) {
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_RESET);
+	}
+	
+	if (data & BIT_5_MASK) {
+		HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_RESET);
+	}
+	
+	if (data & BIT_4_MASK) {
+		HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_RESET);
+	}
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+	
+	MT_WH1602_ResetPins();
+	HAL_GPIO_WritePin(MT_WH1602_RS_PORT,MT_WH1602_RS_PIN,GPIO_PIN_SET);
+
+	if (data & BIT_3_MASK) {
+		HAL_GPIO_WritePin(MT_WH1602_DB7_PORT,MT_WH1602_DB7_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB7_PORT,MT_WH1602_DB7_PIN,GPIO_PIN_RESET);
+	}
+
+	if (data & BIT_2_MASK) {
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB6_PORT,MT_WH1602_DB6_PIN,GPIO_PIN_RESET);
+	}
+	
+	if (data & BIT_1_MASK) {
+		HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB5_PORT,MT_WH1602_DB5_PIN,GPIO_PIN_RESET);
+	}
+	
+	if (data & BIT_0_MASK) {
+		HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(MT_WH1602_DB4_PORT,MT_WH1602_DB4_PIN,GPIO_PIN_RESET);
+	}
+	MT_WH1602_DataReadWrite();
+	MT_WH1602_Delay(1000);
+} // End of function MT_WH1602_WriteData()
+*/
+//****************************************** end of file *******************************************

@@ -105,6 +105,8 @@ class TinyGPS
      */
     unsigned long sat_count() { return _sat_count; }
 
+    unsigned int visible_sat_count() { return _new_visible_sat; }
+
 #ifndef _GPS_NO_STATS
     void stats(unsigned long *chars, unsigned short *good_sentences, unsigned short *failed_cs);
 #endif
@@ -218,6 +220,8 @@ private:
     unsigned int _sat_count, _new_sat_count;
     unsigned long _last_time_fix, _new_time_fix;
     unsigned long _last_position_fix, _new_position_fix;
+    unsigned int _visible_sat, _new_visible_sat;
+
 
     // parsing state variables
     byte _parity;

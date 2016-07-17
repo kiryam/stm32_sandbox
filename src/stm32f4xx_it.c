@@ -36,7 +36,7 @@
 #include "stm32f4xx_it.h"
 #include "cmsis_os.h"
 
-extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN 0 */
 
@@ -68,12 +68,12 @@ void SysTick_Handler(void)
 /**
 * @brief This function handles USART2 global interrupt.
 */
-void USART2_IRQHandler(void)
+void USART6_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
 
   /* USER CODE END USART2_IRQn 0 */
-  HAL_UART_IRQHandler(&huart2);
+  HAL_UART_IRQHandler(&huart6);
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */

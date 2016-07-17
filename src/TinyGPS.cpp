@@ -197,6 +197,7 @@ bool TinyGPS::term_complete()
           _sat_count = _new_sat_count;
         case _GPS_SENTENCE_GPGSV:
           _gsv_ready = true;
+          _visible_sat = _new_visible_sat;
           break;
         }
 
@@ -237,6 +238,9 @@ bool TinyGPS::term_complete()
       _gps_data_good = _term[0] == 'A';
       break;
     case 103: // Latitude
+    	if( _sentence_type == _GPS_SENTENCE_GPGSV){
+    		_new_visible_sat = parse_decimal();
+    	}
     case 202:
       _new_latitude = parse_degrees();
       _new_position_fix = millis();

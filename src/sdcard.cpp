@@ -25,7 +25,7 @@ void SDCard::init() {
 
 	MX_FATFS_Init();
 
-	info("SD card united");
+	//info("SD card united");
 }
 
 FRESULT SDCard::mount() {
@@ -55,9 +55,9 @@ std::string SDCard::get_file_cont(const char* filename){
 		while (f_gets(line, sizeof line, &fil))
 			result.append(line);
 	}else{
-		char msg[50] = {};
-		sprintf(msg, "File %s not found.", filename);
-		error(msg);
+		//char msg[50] = {};
+		//sprintf(msg, "File %s not found.", filename);
+		//error(msg);
 		return "";
 	}
 
@@ -72,7 +72,7 @@ int SDCard::write_str_to_file(const char* filename, std::string s){
 
 	fr = f_open(&fil, filename, FA_WRITE | FA_CREATE_ALWAYS);
 	if ( fr != FR_OK) {
-		error("Failed to open out.txt for writing");
+		//error("Failed to open out.txt for writing");
 	    return 0;
 	}
 
@@ -80,7 +80,7 @@ int SDCard::write_str_to_file(const char* filename, std::string s){
 	f_close(&fil);
 
 	if( testBytes == s.length() ){
-		info("Data write ok.");
+		//info("Data write ok.");
 	}
 	return testBytes;
 }
